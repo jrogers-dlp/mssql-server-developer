@@ -13,13 +13,16 @@ ENV sa_password="_" \
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-RUN Invoke-WebRequest -Uri $env:ssei -OutFile SQL2019-SSEI-Dev.exe
-RUN ./SQL2019-SSEI-Dev.exe /ACTION=Download /MEDIAPATH=C:/ /MEDIATYPE=CAB /QUIET
-RUN Remove-Item -Force ./SQL2019-SSEI-Dev.exe
-
 COPY start.ps1 /
+COPY dotnet-install.ps1 /
 
 WORKDIR /
+
+RUN Invoke-WebRequest -Uri $env:ssei -OutFile SQL2019-SSEI-Dev.exe ; \
+        ./SQL2019-SSEI-Dev.exe /ACTION=Download /MEDIAPATH=C:/ /MEDIATYPE=CAB /QUIET ; \
+        Remove-Item -Force ./SQL2019-SSEI-Dev.exe ; \
+        ./dotnet-install.ps1 -InstallDir 'C:/Program Files/dotnet' ; \
+        setx path '%path%;C:/Program Files/dotnet'
 
 RUN Start-Process -Wait -FilePath .\SQLServer2019-DEV-x64-ENU.exe -ArgumentList /qs, /x:setup ; \
         .\setup\setup.exe /q /ACTION=Install /INSTANCENAME=MSSQLSERVER /FEATURES=SQLEngine /UPDATEENABLED=0 /SQLSVCACCOUNT='NT AUTHORITY\NETWORK SERVICE' /SQLSYSADMINACCOUNTS='BUILTIN\ADMINISTRATORS' /TCPENABLED=1 /NPENABLED=0 /IACCEPTSQLSERVERLICENSETERMS ; \
