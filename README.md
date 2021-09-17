@@ -1,21 +1,16 @@
 # mssql-server-windows-developer
 This is the Dockerfile for the latest version of SQL Server 2019 Developer Edition for Windows Containers.
 
-### Contents
-
-[About this sample](#about-this-sample)<br/>
-[Before you begin](#before-you-begin)<br/>
-[Run this sample](#run-this-sample)<br/>
-[Sample details](#sample-details)<br/>
-[Disclaimers](#disclaimers)<br/>
-[Related links](#related-links)<br/>
-
-
-You can run the container with the following command.
-(Note the you'll need Windows Server 2016 or Windows 10)
+You can build the container with the following command.
 
 ````
-docker run -d -p 1433:1433 -v C:/temp/:C:/temp/ -e sa_password=<YOUR SA PASSWORD> -e ACCEPT_EULA=Y -e attach_dbs="<DB-JSON-CONFIG>" microsoft/mssql-server-windows-developer
+docker build -t mssql-server-developer:latest .
+````
+
+You can run the container with the following command.
+
+````
+docker run --name sqldev -d -p 1433:1433 -e ACCEPT_EULA=Y -e sa_password=MyPass!23 mssql-server-developer:latest
 ````
 
 - **-p HostPort:containerPort** is for port-mapping a container network port to a host port.
